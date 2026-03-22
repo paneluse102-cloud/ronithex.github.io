@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ronit // Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505;
+  --bg2: #0a0a00;
+  --acc: #ffcc00; /* Vibrant Yellow/Gold */
+  --acc2: #ffaa00;
+  --gold: #ffdf00;
+  --mid: #1a1a00;
+  --g4: #8a7d4a;
+  --g5: #bdae7d;
+  --g6: #e8e2c8;
+  --white: #fffdf0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── ENHANCED GLOWING CURSOR ── */
+#cur {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--acc); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform .15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 15px var(--acc), 0 0 30px var(--acc2), 0 0 50px rgba(255,204,0,0.3);
+}
+#ring {
+  position: fixed; width: 38px; height: 38px;
+  border: 2px solid rgba(255,204,0,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: all .4s cubic-bezier(.23,1,.32,1);
+  backdrop-filter: blur(2px);
+}
+
+/* ── BACKGROUND ANIMATIONS ── */
+canvas#bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.6; }
+#matrix-bg { position: fixed; inset: 0; z-index: -1; opacity: 0.08; pointer-events: none; }
+.noise {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+.orb1 { position: fixed; width: 700px; height: 700px; border-radius: 50%; filter: blur(150px); background: rgba(255,200,0,0.04); top: -200px; left: -100px; pointer-events: none; z-index: 0; animation: drift 15s ease-in-out infinite alternate; }
+.orb2 { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(120px); background: rgba(255,160,0,0.03); bottom: -100px; right: -50px; pointer-events: none; z-index: 0; animation: drift 20s ease-in-out infinite alternate-reverse; }
+@keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,30px) scale(1.1); } }
+
+/* ── LAYOUT ── */
+.wrap { position: relative; z-index: 10; max-width: 1120px; margin: 0 auto; padding: 0 2rem; }
+
+/* ── HEADER ── */
+header {
+  padding: 2.5rem 0; display: flex; align-items: center; justify-content: space-between;
+  animation: fadeUp .8s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+.logo { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
+.logo-ic {
+  width: 45px; height: 45px; border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255,204,0,.2), rgba(255,170,0,.1));
+  border: 1px solid rgba(255,204,0,.4);
+  display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  box-shadow: 0 0 25px rgba(255,204,0,.15);
+}
+.logo-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: .1em;
+  background: linear-gradient(135deg, var(--acc), #fff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+/* ── HERO ── */
+.hero { padding: 5rem 0 4rem; animation: fadeUp .9s .1s cubic-bezier(.22,1,.36,1) both; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: .6rem;
+  font-size: .7rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--acc); letter-spacing: .2em; text-transform: uppercase;
+  padding: .4rem 1.2rem; border-radius: 4px;
+  border: 1px solid rgba(255,204,0,.3); background: rgba(255,204,0,.05);
+  margin-bottom: 2rem;
+}
+.badge-dot { width: 6px; height: 6px; background: var(--acc); box-shadow: 0 0 10px var(--acc); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.5; transform:scale(1.2)} }
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 7.5rem);
+  line-height: .9; letter-spacing: .02em; margin-bottom: 2rem;
+}
+.hero-title .line2 {
+  background: linear-gradient(90deg, var(--acc) 0%, #fff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub { font-size: 1.1rem; color: var(--g5); max-width: 600px; line-height: 1.8; font-weight: 300; margin-bottom: 3rem; }
+.hero-sub strong { color: var(--white); border-bottom: 1px solid var(--acc); }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: .8rem;
+  padding: 1rem 2.5rem; border-radius: 4px; font-weight: 700; font-size: .9rem;
+  background: var(--acc); color: #000; text-decoration: none; text-transform: uppercase;
+  box-shadow: 0 0 30px rgba(255,204,0,0.2); transition: all .4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.btn-primary:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 10px 40px rgba(255,204,0,0.4); }
+
+/* ── CARDS ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin: 4rem 0; }
+.card {
+  background: rgba(15,15,10,0.8); border: 1px solid rgba(255,204,0,0.1);
+  padding: 2rem; border-radius: 4px; position: relative; overflow: hidden;
+  transition: all .4s cubic-bezier(0.23, 1, 0.32, 1); text-decoration: none; color: inherit;
+}
+.card:hover {
+  border-color: var(--acc); transform: translateY(-10px);
+  background: rgba(255,204,0,0.03); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.card-icon { font-size: 1.8rem; margin-bottom: 1.5rem; display: block; }
+.card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--acc); margin-bottom: 0.8rem; letter-spacing: 0.05em; }
+.card-desc { font-size: 0.9rem; color: var(--g5); line-height: 1.6; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 4rem 0; border-top: 1px solid rgba(255,204,0,0.1);
+  font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--g4);
+}
+footer a { color: var(--acc); text-decoration: none; margin: 0 10px; opacity: 0.6; transition: 0.3s; }
+footer a:hover { opacity: 1; text-shadow: 0 0 10px var(--acc); }
+
+@media(max-width:768px) {
+  .hero-title { font-size: 4rem; }
+  .nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="ring"></div>
+<canvas id="matrix-bg"></canvas>
+<canvas id="bg"></canvas>
+<div class="noise"></div>
+<div class="orb1"></div>
+<div class="orb2"></div>
+
+<div class="wrap">
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-ic">R</div>
+      <span class="logo-name">RONIT</span>
+    </a>
+    <nav style="display: flex; gap: 2rem; font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+      <a href="#" style="color: var(--acc); text-decoration: none;">SYSTEMS</a>
+      <a href="#" style="color: var(--white); text-decoration: none;">INTEL</a>
+      <a href="#" style="color: var(--white); text-decoration: none;">LOG</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      STATUS: ACTIVE // SESSION_2026
+    </div>
+    <h1 class="hero-title">
+      <span class="line1">THINK. MOVE.</span><br>
+      <span class="line2">EXECUTE.</span>
+    </h1>
+    <p class="hero-sub">
+      Turning late-night curiosity into <strong>powerful solutions</strong>.<br>
+      I don’t hack to break — I learn to build smarter systems. <br>
+      Think logically. Move silently. Execute precisely. ⚡
+    </p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-primary">Initialize Connection</a>
+    </div>
+  </div>
+
+  <div class="cards">
+  <a href="core.html" class="card">
+      <span class="card-icon">⚡</span>
+      <h3 class="card-title">Core Systems</h3>
+      <p class="card-desc">Architecting robust backends and secure protocols. Precision in every line of code.</p>
+    </a>
+     <a href="shop.html" class="card">
+      <span class="card-icon">⬢</span>
+      <h3 class="card-title">Hex Showcase</h3>
+      <p class="card-desc">A curated collection of experimental builds, UI modules, and logic puzzles.</p>
+    </a>
+
+    <a href="https://discord.com/users/YOUR_HADEBOT_ID" target="_blank" class="card">
+      <span class="card-icon">∿</span>
+      <h3 class="card-title">Sonic Signals</h3>
+      <p class="card-desc">Experimental soundscapes and frequency modulation. Integrated via the Hadebot discord module.</p>
+    </a>
+  </div>
+    
+
+   
+    
+  <footer>
+    [ TERMINAL 2.0 ] &copy; 2026 RONIT &nbsp; // &nbsp; <a href="#">GITHUB</a> <a href="#">LINKEDIN</a> <a href="#">ENCRYPTED_MAIL</a>
+  </footer>
+</div>
+
+<script>
+/* ── SMOOTH 60FPS CURSOR ── */
+const cur = document.getElementById('cur'), ring = document.getElementById('ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx + 'px'; cur.style.top = my + 'px'; });
+(function loop() {
+  rx += (mx - rx) * .15; ry += (my - ry) * .15;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(loop);
+})();
+
+/* ── MATRIX BACKGROUND ── */
+const mcv = document.getElementById('matrix-bg'), mctx = mcv.getContext('2d');
+let mW, mH;
+function mResize() { mW = mcv.width = innerWidth; mH = mcv.height = innerHeight; }
+mResize(); window.addEventListener('resize', mResize);
+
+const chars = "01HEXRONIT⚡◈";
+const drops = Array(Math.floor(innerWidth/20)).fill(1);
+function drawMatrix() {
+  mctx.fillStyle = "rgba(5, 5, 0, 0.05)";
+  mctx.fillRect(0, 0, mW, mH);
+  mctx.fillStyle = "#ffcc00";
+  mctx.font = "15px monospace";
+  drops.forEach((y, i) => {
+    const text = chars[Math.floor(Math.random()*chars.length)];
+    mctx.fillText(text, i * 20, y * 20);
+    if(y * 20 > mH && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 50);
+
+/* ── CONSTELLATION PARTICLES ── */
+const cv = document.getElementById('bg'), ctx = cv.getContext('2d');
+let W, H;
+function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const pts = Array.from({ length: 50 }, () => ({
+  x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+  r: Math.random() * 2 + 1,
+  vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+}));
+
+(function drawBg() {
+  ctx.clearRect(0, 0, W, H);
+  pts.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 204, 0, 0.3)";
+    ctx.fill();
+
+    for (let j = i + 1; j < pts.length; j++) {
+      const q = pts[j];
+      const d = Math.hypot(p.x - q.x, p.y - q.y);
+      if (d < 150) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+        ctx.strokeStyle = `rgba(255, 204, 0, ${(1 - d / 150) * 0.15})`;
+        ctx.stroke();
+      }
+    }
+  });
+  requestAnimationFrame(drawBg);
+})();
+
+/* ── TILT EFFECT ── */
+document.querySelectorAll('.card').forEach(c => {
+  c.addEventListener('mousemove', e => {
+    const r = c.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    c.style.transform = `perspective(1000px) rotateX(${-y * 10}deg) rotateY(${x * 10}deg) translateY(-10px)`;
+  });
+  c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+});
+</script>
+</body>
+</html>

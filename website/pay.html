@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ronit // Hex Store Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --acc: #ffcc00;
+            --acc2: #ffaa00;
+            --white: #fffdf0;
+            --g4: #8a7d4a;
+            --g5: #bdae7d;
+            --mid: #1a1a00;
+            --card-bg: rgba(15, 15, 10, 0.9);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--white);
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Reusing your Noise & Orbs for consistency */
+        .noise {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+        }
+
+        .wrap { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 2rem; border-bottom: 1px solid rgba(255, 204, 0, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .logo { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
+        .logo-ic {
+            width: 40px; height: 40px; border-radius: 6px;
+            background: linear-gradient(135deg, rgba(255,204,0,.2), rgba(255,170,0,.1));
+            border: 1px solid rgba(255,204,0,.4);
+            display: flex; align-items: center; justify-content: center; color: var(--acc);
+        }
+        .logo-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--white); letter-spacing: 1px; }
+
+        /* Checkout Grid */
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: var(--acc);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Styling */
+        .payment-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 204, 0, 0.1);
+            padding: 2rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .input-group { margin-bottom: 1.5rem; }
+        label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--g5);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--mid);
+            padding: 1rem;
+            color: white;
+            font-family: 'Space Grotesk';
+            border-radius: 4px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        input:focus { border-color: var(--acc); box-shadow: 0 0 10px rgba(255, 204, 0, 0.1); }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* Order Summary (The "Amazon" Sidebar) */
+        .summary-card {
+            background: rgba(255, 204, 0, 0.03);
+            border: 1px solid var(--acc);
+            padding: 2rem;
+            border-radius: 4px;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .total-row {
+            border-top: 1px solid rgba(255, 204, 0, 0.2);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--acc);
+        }
+
+        .btn-pay {
+            width: 100%;
+            background: var(--acc);
+            color: black;
+            border: none;
+            padding: 1.2rem;
+            font-family: 'Bebas Neue';
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .btn-pay:hover {
+            background: white;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .secure-tag {
+            text-align: center;
+            font-family: 'JetBrains Mono';
+            font-size: 0.7rem;
+            color: var(--g4);
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 900px) {
+            .checkout-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<div class="wrap">
+    <header>
+        <a class="logo" href="index2.html">
+            <div class="logo-ic">R</div>
+            <span class="logo-name">RONIT // STORE</span>
+        </a>
+        <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--g4);">
+            SECURE_SESSION: <span style="color: var(--acc);">ENCRYPTED</span>
+        </div>
+    </header>
+
+    <main class="checkout-grid">
+        <div class="payment-flow">
+            <h2 class="section-title">01. SHIPPING_DETAILS</h2>
+            <div class="payment-card">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Delivery Address</label>
+                    <input type="text" placeholder="123 Cyber Lane, Neo Tokyo">
+                </div>
+            </div>
+
+            <h2 class="section-title">02. PAYMENT_METHOD</h2>
+            <div class="payment-card">
+                <div class="input-group">
+                    <label>Card Number</label>
+                    <input type="text" placeholder="**** **** **** 8892">
+                </div>
+                <div class="row">
+                    <div class="input-group">
+                        <label>Expiry</label>
+                        <input type="text" placeholder="MM/YY">
+                    </div>
+                    <div class="input-group">
+                        <label>CVV</label>
+                        <input type="password" placeholder="***">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside>
+            <div class="summary-card">
+                <h3 style="font-family: 'Bebas Neue'; margin-bottom: 1.5rem; letter-spacing: 1px;">ORDER_SUMMARY</h3>
+                
+                <div class="item-row">
+                    <span>Neural Link Protocol</span>
+                    <span>$499.00</span>
+                </div>
+                <div class="item-row">
+                    <span>Encryption Key (v2)</span>
+                    <span>$150.00</span>
+                </div>
+                <div class="item-row" style="color: var(--g4);">
+                    <span>Service Tax (5%)</span>
+                    <span>$32.45</span>
+                </div>
+
+                <div class="total-row">
+                    <span>TOTAL</span>
+                    <span>$681.45</span>
+                </div>
+
+                <button class="btn-pay" onclick="handlePayment()">EXECUTE_PAYMENT</button>
+                
+                <div class="secure-tag">
+                    🔒 SSL 256-BIT ENCRYPTION ACTIVE
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+
+<script>
+    function handlePayment() {
+        const btn = document.querySelector('.btn-pay');
+        btn.innerText = "PROCESSING...";
+        btn.style.opacity = "0.7";
+        
+        setTimeout(() => {
+            alert("Payment Protocol Initiated. Check your encrypted mail for confirmation.");
+            btn.innerText = "EXECUTE_PAYMENT";
+            btn.style.opacity = "1";
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ronit // Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══ THEME VARIABLES (Synced with index2.html) ═══ */
+:root {
+  --bg: #050505;
+  --bg2: #0a0a00;
+  --acc: #ffcc00; /* Vibrant Yellow/Gold */
+  --acc2: #ffaa00;
+  --gold: #ffdf00;
+  --mid: #1a1a00;
+  --sf: #111100;
+  --sf2: #161605;
+  --bdr: rgba(255, 204, 0, 0.15);
+  --bdr2: rgba(255, 255, 255, 0.06);
+  --tx: #fffdf0;
+  --tx2: rgba(255, 253, 240, 0.6);
+  --tx3: rgba(138, 125, 74, 0.4);
+  --glow: rgba(255, 204, 0, 0.12);
+  --card: rgba(10, 10, 0, 0.97);
+  --nav-bg: rgba(5, 5, 5, 0.88);
+  --T: .55s cubic-bezier(.23,1,.32,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  overflow-x: hidden;
+  cursor: none;
+  min-height: 100vh;
+}
+
+/* ── BACKGROUNDS ── */
+canvas#bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.6; }
+.noise {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+/* ── CURSOR ── */
+#cur {
+  position: fixed; width: 8px; height: 8px; background: var(--acc); border-radius: 50%;
+  pointer-events: none; z-index: 9999; transform: translate(-50%,-50%);
+  transition: transform .15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 15px var(--acc), 0 0 30px var(--acc2);
+}
+#ring {
+  position: fixed; width: 38px; height: 38px; border: 2px solid rgba(255,204,0,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998; transform: translate(-50%,-50%);
+  transition: all .4s var(--T); backdrop-filter: blur(2px);
+}
+
+/* ── NAVIGATION (Exact Sync) ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 3rem; background: var(--nav-bg); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bdr);
+}
+.logo {
+  font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: .15em;
+  background: linear-gradient(110deg, var(--gold), var(--acc2), var(--gold));
+  background-size: 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: lshift 3s linear infinite; filter: drop-shadow(0 0 10px rgba(255, 204, 0, 0.3));
+}
+@keyframes lshift { 0% { background-position: 0% } 100% { background-position: 200% } }
+
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  text-decoration: none; color: var(--tx2); font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; transition: .3s;
+}
+.nav-links a:hover { color: var(--acc); text-shadow: 0 0 10px var(--acc); }
+
+/* ── SHOP LAYOUT ── */
+.hero {
+  min-height: 50vh; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 8rem 2rem 4rem; position: relative;
+}
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,204,0,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,204,0,0.03) 1px, transparent 1px);
+  background-size: 50px 50px; mask-image: radial-gradient(circle, black, transparent 80%);
+}
+.htitle {
+  font-family: 'Bebas Neue', cursive; font-size: clamp(3rem, 10vw, 7rem);
+  line-height: 0.9; letter-spacing: 0.02em; margin-bottom: 1rem;
+  background: linear-gradient(to bottom, #fff, var(--acc));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+#shop { position: relative; z-index: 2; padding: 0 2rem 10rem; }
+.shopw { max-width: 1200px; margin: 0 auto; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+
+/* ── PRODUCT CARDS ── */
+.pc {
+  background: var(--card); border: 1px solid var(--bdr); border-radius: 4px;
+  overflow: hidden; position: relative; transition: all .4s var(--T);
+}
+.pc:hover { 
+    border-color: var(--acc); 
+    transform: translateY(-8px); 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px var(--glow); 
+}
+
+.pt {
+  height: 180px; background: #000; position: relative; 
+  display: flex; align-items: center; justify-content: center;
+}
+.pt-badge {
+  position: absolute; top: 15px; left: 15px; background: var(--acc);
+  color: #000; font-family: 'JetBrains Mono'; font-size: 0.65rem; font-weight: 800;
+  padding: 4px 10px; text-transform: uppercase;
+}
+
+.pb { padding: 1.5rem; }
+.pname { font-family: 'Bebas Neue'; font-size: 1.8rem; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.pdesc { font-size: 0.85rem; color: var(--tx2); line-height: 1.6; margin-bottom: 1.5rem; min-height: 3rem; }
+
+.pfoot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 1.5rem; border-top: 1px solid var(--bdr2);
+}
+.pprice { font-family: 'JetBrains Mono'; font-size: 1.4rem; color: var(--acc); font-weight: 600; }
+
+/* ── REDIRECT BUTTON ── */
+.bbuy {
+  background: var(--acc); color: #000; border: none; padding: 0.8rem 1.8rem;
+  font-family: 'Bebas Neue'; font-size: 1.1rem; letter-spacing: 0.1em; cursor: none;
+  transition: .3s; text-decoration: none; display: inline-block;
+}
+.bbuy:hover { background: #fff; transform: scale(1.05); }
+
+footer { padding: 4rem 2rem; text-align: center; color: var(--tx3); font-family: 'JetBrains Mono'; font-size: 0.7rem; letter-spacing: 0.2em; }
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="ring"></div>
+<canvas id="bg"></canvas>
+<div class="noise"></div>
+
+<nav>
+  <div class="logo">RONIT // SHOP</div>
+  <ul class="nav-links">
+    <li><a href="index2.html">Home</a></li>
+    <li><a href="#shop">Products</a></li>
+    <li><a href="pay.html">Status</a></li> <li><a href="#">Discord</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <h1 class="htitle">CENTRAL TERMINAL</h1>
+  <p style="color:var(--tx2); font-family:'JetBrains Mono'; font-size:0.8rem; letter-spacing:3px; text-transform:uppercase;">Select your deployment package</p>
+</section>
+
+<section id="shop">
+  <div class="shopw">
+    <div class="pgrid">
+      <div class="pc">
+        <div class="pt">
+          <div class="pt-badge">Active</div>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="pb">
+          <h3 class="pname">Neural Link Protocol</h3>
+          <p class="pdesc">High-speed data synchronization and memory optimization for peak performance.</p>
+          <div class="pfoot">
+            <span class="pprice">$499.00</span>
+            <a href="pay.html" class="bbuy">Purchase</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pc">
+        <div class="pt">
+          <div class="pt-badge">Limited</div>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="pb">
+          <h3 class="pname">Encryption Key (v2)</h3>
+          <p class="pdesc">Military-grade cryptographic layer for secure terminal transactions.</p>
+          <div class="pfoot">
+            <span class="pprice">$150.00</span>
+            <a href="pay.html" class="bbuy">Purchase</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pc">
+        <div class="pt">
+          <div class="pt-badge">New</div>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
+        </div>
+        <div class="pb">
+          <h3 class="pname">Sentinel Bypass</h3>
+          <p class="pdesc">Advanced stealth module compatible with modern detection systems.</p>
+          <div class="pfoot">
+            <span class="pprice">$299.00</span>
+            <a href="pay.html" class="bbuy">Purchase</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2026 RONIT TERMINAL. ACCESS AUTHORIZED.
+</footer>
+
+<script>
+/* ── PARTICLE BACKGROUND (Synced from index2.html) ── */
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const pts = Array.from({ length: 50 }, () => ({
+  x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+  r: Math.random() * 2 + 1,
+  vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+}));
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  pts.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 204, 0, 0.3)";
+    ctx.fill();
+    for (let j = i + 1; j < pts.length; j++) {
+      const d = Math.hypot(p.x - pts[j].x, p.y - pts[j].y);
+      if (d < 150) {
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.strokeStyle = `rgba(255, 204, 0, ${0.1 * (1 - d/150)})`; ctx.stroke();
+      }
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ── CURSOR SCRIPT ── */
+const cur = document.getElementById('cur'), ring = document.getElementById('ring');
+window.addEventListener('mousemove', e => {
+  cur.style.left = ring.style.left = e.clientX + 'px';
+  cur.style.top = ring.style.top = e.clientY + 'px';
+});
+
+document.querySelectorAll('button, a, .pc').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width = '60px'; ring.style.height = '60px';
+    ring.style.background = 'rgba(255,204,0,0.1)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width = '38px'; ring.style.height = '38px';
+    ring.style.background = 'transparent';
+  });
+});
+</script>
+
+</body>
+</html>
